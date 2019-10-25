@@ -9,12 +9,18 @@ namespace binhue
         {
             if (args.Length != 1)
             {
-                Console.WriteLine("Usage: binhue url");
+                Console.WriteLine("Usage: binhue appkey");
                 return;
             }
 
-            ECDCScrape scraper = new ECDCScrape();
-            await scraper.scrape(args[0]);
+//            ECDCScrape scraper = new ECDCScrape();
+//            await scraper.scrape(args[0]);
+//            Hue hue = new Hue();
+//            await hue.CheckAuth();
+
+            Hue hue = new Hue(args[0]);
+            await hue.Connect();
+            await hue.TestBlue();
         }
     }
 }
