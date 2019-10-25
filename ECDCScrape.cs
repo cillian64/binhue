@@ -34,7 +34,13 @@ namespace binhue
                 {
                     continue;
                 }
-                Console.WriteLine(contents);
+
+                string[] lines = contents.Split('\n');
+                Console.WriteLine("Which bin: " + lines[0]);
+
+                string dateStr = lines[1].Split('-')[1].Trim();
+                var day = DateTime.Parse(dateStr);
+                Console.WriteLine("Date: " + day);
             }
         }
     }
