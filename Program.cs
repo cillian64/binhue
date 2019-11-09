@@ -14,23 +14,19 @@ namespace binhue
             }
 
             ECDC council = new ECDC(args[0]);
-            var collections = await council.scrape();
-            foreach (var collection in collections)
+            var bins = await council.getTomorrowBin();
+            if (bins.Count == 0)
             {
-                Console.WriteLine("Which bin: " + collection.bin.contents +
-                                  " (" + collection.bin.color.ToHex() + ")");
-                Console.WriteLine("Date: " + collection.collectionDate);
-            }
-
-            Council.Bin bin = await council.getTomorrowBin();
-            if (bin != null)
-            {
-                Console.WriteLine("Collection tomorrow: " + bin.contents +
-                                  " (" + bin.color.ToHex() + ")");
+                Console.WriteLine("No collections tomorrow.");
             }
             else
             {
-                Console.WriteLine("No collection tomorrow.");
+                Console.WriteLine("Collections tomorrow: ");
+                foreach (var bin in bins)
+                {
+                    Console.WriteLine(bin.contents + " ("
+                                      + bin.color.ToHex() + ")");
+                }
             }
 
 //            Hue hue = new Hue(args[0]);

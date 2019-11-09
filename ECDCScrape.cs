@@ -12,7 +12,7 @@ namespace binhue
         private HttpClient client = new HttpClient();
         private string url;
 
-        public class BinCollection
+        private class BinCollection
         {
             public Bin bin;
             public DateTime collectionDate;
@@ -24,7 +24,7 @@ namespace binhue
             }
         }
 
-        class ECDCBin : Bin
+        private class ECDCBin : Bin
         {
             // Construct a bin from text description off website
             public ECDCBin(string text)
@@ -57,7 +57,7 @@ namespace binhue
         }
 
         // Scrape the ECDC webpage to get a list of bin collections
-        public async Task<List<BinCollection>> scrape()
+        private async Task<List<BinCollection>> scrape()
         {
             // Load webpage
             var response = await client.GetAsync(url);
@@ -93,20 +93,21 @@ namespace binhue
             return collections;
         }
 
-        override public async Task<Bin> getTomorrowBin()
+        override public async Task<List<Council.Bin>> getTomorrowBin()
         {
             var collections = await scrape();
             var tomorrow = DateTime.Today;
+            var tomorrowBins = new List<Bin>();
 
+            // TODO(dwt): Do this with a map and filter!
             foreach (var collection in collections)
             {
                 if (collection.collectionDate.Date.Equals(tomorrow))
                 {
-                    return collection.bin;
+                    tomorrowBins.Add(collection.bin);
                 }
             }
-            // No collection tomorrow.
-            return null;
+            return tomorrowBins;
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Q42.HueApi.ColorConverters;  // for RGBColor
 
@@ -21,8 +22,7 @@ namespace binhue
             public RGBColor color;
         }
 
-        // Return the bin to be collected tomorrow, or null if there is no
-        // collection tomorrow.
-        abstract public Task<Bin> getTomorrowBin();
+        // Return a list of bin to be collected tomorrow (maybe empty)
+        abstract public Task<List<Bin>> getTomorrowBin();
     }
 }
