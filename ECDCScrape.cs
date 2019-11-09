@@ -10,6 +10,7 @@ namespace binhue
     class ECDC : Council
     {
         private HttpClient client = new HttpClient();
+        private string url;
 
         public class BinCollection
         {
@@ -50,8 +51,13 @@ namespace binhue
             }
         }
 
+        public ECDC(string _url)
+        {
+            url = _url;
+        }
+
         // Scrape the ECDC webpage to get a list of bin collections
-        public async Task<List<BinCollection>> scrape(string url)
+        public async Task<List<BinCollection>> scrape()
         {
             // Load webpage
             var response = await client.GetAsync(url);
@@ -89,7 +95,18 @@ namespace binhue
 
         override public async Task<Bin> getTomorrowBin()
         {
-            throw new NotImplementedException();
+            var collections = await scrape();
+            var tomorrow = DateTime.Today;
+
+            foreach (var collection in collections)
+            {
+                if (collection.collectionDate.Date.Equals(tomorrow))
+                {
+                    return collection.bin;
+                }
+            }
+            // No collection tomorrow.
+            return null;
         }
     }
 }

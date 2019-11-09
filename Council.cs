@@ -21,6 +21,8 @@ namespace binhue
             public RGBColor color;
         }
 
+        // Return the bin to be collected tomorrow, or null if there is no
+        // collection tomorrow.
         abstract public Task<Bin> getTomorrowBin();
     }
 }
