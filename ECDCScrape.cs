@@ -93,13 +93,13 @@ namespace binhue
             return collections;
         }
 
-        override public async Task<List<Council.Bin>> getTomorrowBin()
+        override public async Task<List<Council.Bin>> getTomorrowBins()
         {
             var collections = await scrape();
             var tomorrow = DateTime.Today.AddDays(1.0);
-            var tomorrowBins = new List<Bin>();
 
             // TODO(dwt): Do this with a map and filter!
+            var tomorrowBins = new List<Bin>();
             foreach (var collection in collections)
             {
                 if (collection.collectionDate.Date.Equals(tomorrow))

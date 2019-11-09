@@ -14,7 +14,7 @@ namespace binhue
             }
 
             ECDC council = new ECDC(args[0]);
-            var bins = await council.getTomorrowBin();
+            var bins = await council.getTomorrowBins();
             if (bins.Count == 0)
             {
                 Console.WriteLine("No collections tomorrow.");
