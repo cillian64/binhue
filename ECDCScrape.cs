@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net.Http;
 using HtmlAgilityPack;
@@ -6,18 +7,51 @@ using Q42.HueApi.ColorConverters;  // for RGBColor
 
 namespace binhue
 {
-    class ECDCScrape : Council
+    class ECDC : Council
     {
-        HttpClient client = new HttpClient();
+        private HttpClient client = new HttpClient();
 
-        private struct BinCollection
+        public class BinCollection
         {
             public Bin bin;
             public DateTime collectionDate;
+
+            public BinCollection(string binDesc, string dateStr)
+            {
+                bin = new ECDCBin(binDesc);
+                collectionDate = DateTime.Parse(dateStr);
+            }
+        }
+
+        class ECDCBin : Bin
+        {
+            // Construct a bin from text description off website
+            public ECDCBin(string text)
+            {
+                if (text == "Black Bag")
+                {
+                    contents = "General waste";
+                    color = new RGBColor("000000");
+                }
+                else if (text == "Green Bin")
+                {
+                    contents = "Composting";
+                    color = new RGBColor("00FF00");
+                }
+                else if (text == "Blue Bin")
+                {
+                    contents = "Recycling";
+                    color = new RGBColor("0000FF");
+                }
+                else
+                {
+                    throw new ParseException("Unrecognised bin string");
+                }
+            }
         }
 
         // Scrape the ECDC webpage to get a list of bin collections
-        public async Task scrape(string url)
+        public async Task<List<BinCollection>> scrape(string url)
         {
             // Load webpage
             var response = await client.GetAsync(url);
@@ -33,57 +67,29 @@ namespace binhue
                 throw new ParseException("Can't see any bin collections.");
             }
 
-            // Print out row contents
+            // Parse each row in the table
+            var collections = new List<BinCollection>();
             foreach (var row in rows)
             {
                 var contents = row.InnerText.Trim();
                 if (contents == "")
                 {
-                    continue;
+                    continue;  // Skip mystery empty rows in table
                 }
 
+                // Each entry is a bin description, newline, collection date.
                 string[] lines = contents.Split('\n');
-                Console.WriteLine("Which bin: " + lines[0]);
-
+                string binDesc = lines[0];
                 string dateStr = lines[1].Split('-')[1].Trim();
-                var day = DateTime.Parse(dateStr);
-                Console.WriteLine("Date: " + day);
-            }
-        }
 
-        // Convert the text on the website (e.g. "Green Bin") to a Bin
-        private Bin TextToBin(string text)
-        {
-            Bin bin;
-            if (text == "Black Bag")
-            {
-                bin.contents = "General waste";
-                bin.color = new RGBColor("000000");
+                collections.Add(new BinCollection(binDesc, dateStr));
             }
-            else if (text == "Green Bin")
-            {
-                bin.contents = "Composting";
-                bin.color = new RGBColor("00FF00");
-            }
-            else if (text == "Blue Bin")
-            {
-                bin.contents = "Recycling";
-                bin.color = new RGBColor("0000FF");
-            }
-            else
-            {
-                throw new ParseException("Unrecognised bin string");
-            }
-            return bin;
+            return collections;
         }
 
         override public async Task<Bin> getTomorrowBin()
         {
-            // TODO(dwt): Not implemented
-            Bin bin;
-            bin.contents = "junk";
-            bin.color = new RGBColor("FF0000");
-            return bin;
+            throw new NotImplementedException();
         }
     }
 }
