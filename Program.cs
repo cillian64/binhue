@@ -13,14 +13,12 @@ namespace binhue
                 return;
             }
 
-//            ECDCScrape scraper = new ECDCScrape();
-//            await scraper.scrape(args[0]);
-//            Hue hue = new Hue();
-//            await hue.CheckAuth();
+            ECDCScrape scraper = new ECDCScrape();
+            await scraper.scrape(args[0]);
 
-            Hue hue = new Hue(args[0]);
-            await hue.Connect();
-            await hue.TestBlue();
+//            Hue hue = new Hue(args[0]);
+//            await hue.Connect();
+//            await hue.TestBlue();
         }
     }
 }

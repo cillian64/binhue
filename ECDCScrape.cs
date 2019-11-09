@@ -2,13 +2,21 @@ using System;
 using System.Threading.Tasks;
 using System.Net.Http;
 using HtmlAgilityPack;
+using Q42.HueApi.ColorConverters;  // for RGBColor
 
 namespace binhue
 {
-    class ECDCScrape
+    class ECDCScrape : Council
     {
         HttpClient client = new HttpClient();
 
+        private struct BinCollection
+        {
+            public Bin bin;
+            public DateTime collectionDate;
+        }
+
+        // Scrape the ECDC webpage to get a list of bin collections
         public async Task scrape(string url)
         {
             // Load webpage
@@ -22,8 +30,7 @@ namespace binhue
             var rows = pageDocument.DocumentNode.SelectNodes(xpath);
             if (rows == null)
             {
-                Console.WriteLine("Parse failed");
-                return;
+                throw new ParseException("Can't see any bin collections.");
             }
 
             // Print out row contents
@@ -42,6 +49,41 @@ namespace binhue
                 var day = DateTime.Parse(dateStr);
                 Console.WriteLine("Date: " + day);
             }
+        }
+
+        // Convert the text on the website (e.g. "Green Bin") to a Bin
+        private Bin TextToBin(string text)
+        {
+            Bin bin;
+            if (text == "Black Bag")
+            {
+                bin.contents = "General waste";
+                bin.color = new RGBColor("000000");
+            }
+            else if (text == "Green Bin")
+            {
+                bin.contents = "Composting";
+                bin.color = new RGBColor("00FF00");
+            }
+            else if (text == "Blue Bin")
+            {
+                bin.contents = "Recycling";
+                bin.color = new RGBColor("0000FF");
+            }
+            else
+            {
+                throw new ParseException("Unrecognised bin string");
+            }
+            return bin;
+        }
+
+        override public async Task<Bin> getTomorrowBin()
+        {
+            // TODO(dwt): Not implemented
+            Bin bin;
+            bin.contents = "junk";
+            bin.color = new RGBColor("FF0000");
+            return bin;
         }
     }
 }
