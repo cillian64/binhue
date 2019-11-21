@@ -39,13 +39,15 @@ namespace binhue
             Console.WriteLine("Hue client initialized.");
         }
 
-        public async Task TestBlue()
+        public async Task SetColour(RGBColor color)
         {
+            // Set all lights to the specified colour
+
             var command = new LightCommand();
             // ColorConverter by default assumes a LCT001 fixture, the gamut
             // of which is very limited in the green direction.  Specify a
             // "Richer Colours" fixture so we can get green instead of lime.
-            command.TurnOn().SetColor(new RGBColor("0000FF"), "LCT015");
+            command.TurnOn().SetColor(color, "LCT015");
             var results = await client.SendCommandAsync(command);
             if (results.HasErrors())
             {
@@ -59,6 +61,7 @@ namespace binhue
             } else {
                 Console.WriteLine("Light test successful.");
             }
+
         }
     }
 }
