@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Q42.HueApi.ColorConverters;  // for RGBColor
 
@@ -98,16 +99,9 @@ namespace binhue
             var collections = await scrape();
             var tomorrow = DateTime.Today.AddDays(1.0);
 
-            // TODO(dwt): Do this with a map and filter!
-            var tomorrowBins = new List<Bin>();
-            foreach (var collection in collections)
-            {
-                if (collection.collectionDate.Date.Equals(tomorrow))
-                {
-                    tomorrowBins.Add(collection.bin);
-                }
-            }
-            return tomorrowBins;
+            var tomorrowCollections =
+                collections.Where(x => x.collectionDate.Date.Equals(tomorrow));
+            return tomorrowCollections.Select(x => x.bin).ToList();
         }
     }
 }

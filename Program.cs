@@ -13,6 +13,8 @@ namespace binhue
                 return;
             }
 
+            // TODO(dwt): Use a config file instead of commandline args.
+
             ECDC council = new ECDC(args[0]);
             var bins = await council.getTomorrowBins();
             if (bins.Count == 0)
